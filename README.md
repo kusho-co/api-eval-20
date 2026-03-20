@@ -21,7 +21,7 @@ tags:
   - qa
   - code
 task_categories:
-  - text-generation
+  - test-generation
 task_ids:
   - language-modeling
 dataset_info:
@@ -56,7 +56,7 @@ dataset_info:
 
 # APIEval-20: A Benchmark for Black-Box API Test Suite Generation
 
-> **A task benchmark for evaluating AI agents on real-world API testing.**
+**A task benchmark for evaluating AI agents on real-world API testing.**
 
 ---
 
