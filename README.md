@@ -64,13 +64,13 @@ dataset_info:
 
 Testing APIs thoroughly is one of the most critical, yet consistently underserved, activities in software engineering. Despite a rich ecosystem of API testing tools — Postman, RestAssured, Schemathesis, Dredd, and others — we found ourselves asking a deceptively simple question:
 
-> *Given only the schema and an example payload of an API request — no source code, no documentation, no prior knowledge — how well can an AI agent generate a test suite that actually finds bugs?*
+*Given only the schema and an example payload of an API request — no source code, no documentation, no prior knowledge — how well can an AI agent generate a test suite that actually finds bugs?*
 
 We searched for an existing benchmark that captured this black-box scenario and came up empty. Every evaluation we found either required access to the implementation, relied on rich API documentation, or measured properties like schema compliance rather than actual bug-finding capability. The practitioner reality is different: teams frequently receive API payloads with little context and need to construct meaningful tests quickly.
 
 That gap is the reason **APIEval-20** exists.
 
-> **Note:** APIEval-20 is not a model benchmark. It is a **task benchmark for AI agents**. It evaluates end-to-end agent behavior — the ability to reason about an API surface, design targeted tests, and uncover real bugs — not just the quality of generated text.
+**Note:** APIEval-20 is not a model benchmark. It is a **task benchmark for AI agents**. It evaluates end-to-end agent behavior — the ability to reason about an API surface, design targeted tests, and uncover real bugs — not just the quality of generated text.
 
 ---
 
