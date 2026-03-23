@@ -21,7 +21,7 @@ tags:
   - qa
   - code
 task_categories:
-  - test-generation
+  - text-generation
 task_ids:
   - language-modeling
 dataset_info:
