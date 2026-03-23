@@ -16,7 +16,30 @@
       "phone": { "type": "string", "description": "Optional E.164-format phone number" },
       "bio": { "type": "string", "description": "Optional biography text; maximum 500 characters" },
       "avatar_url": { "type": "string", "description": "Optional avatar image URL; must use https scheme" },
-      "preferred_language": { "type": "string", "description": "Optional BCP 47 language tag (e.g. en-US)" }
+      "preferred_language": { "type": "string", "description": "Optional BCP 47 language tag (e.g. en-US)" },
+      "address": {
+        "type": "object",
+        "description": "Optional mailing address for the user",
+        "properties": {
+          "line1": { "type": "string", "description": "Primary street address line" },
+          "line2": { "type": "string", "description": "Optional secondary address line (apartment, suite, etc.)" },
+          "city": { "type": "string", "description": "City" },
+          "state": { "type": "string", "description": "State or province code" },
+          "postal_code": { "type": "string", "description": "Postal or ZIP code" },
+          "country": { "type": "string", "description": "ISO 3166-1 alpha-2 country code" }
+        }
+      },
+      "social_links": {
+        "type": "object",
+        "description": "Optional social media profile URLs",
+        "properties": {
+          "twitter": { "type": "string", "description": "Optional Twitter/X profile URL" },
+          "linkedin": { "type": "string", "description": "Optional LinkedIn profile URL" },
+          "github": { "type": "string", "description": "Optional GitHub profile URL" }
+        }
+      },
+      "notification_email": { "type": "string", "description": "Optional separate email address for notifications, distinct from the login email" },
+      "timezone": { "type": "string", "description": "Optional IANA timezone identifier (e.g. America/Los_Angeles)" }
     }
   },
   "sample_payload": {
@@ -24,6 +47,17 @@
     "first_name": "Alice",
     "last_name": "Johnson",
     "bio": "Software engineer at KushoAI",
-    "preferred_language": "en-US"
+    "preferred_language": "en-US",
+    "address": {
+      "line1": "456 Oak Ave",
+      "city": "San Francisco",
+      "state": "CA",
+      "postal_code": "94102",
+      "country": "US"
+    },
+    "social_links": {
+      "linkedin": "https://linkedin.com/in/alicejohnson"
+    },
+    "timezone": "America/Los_Angeles"
   }
 }

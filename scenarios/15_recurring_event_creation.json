@@ -25,8 +25,68 @@
           "end_date": { "type": "string", "description": "ISO8601 date after which no more occurrences are created; required when end_type is date" }
         }
       },
-      "attendees": { "type": "array", "description": "Optional list of attendee email addresses", "items": { "type": "string" } },
-      "location": { "type": "string", "description": "Optional event location" }
+      "attendees": {
+        "type": "array",
+        "description": "Optional list of attendees with their roles and notification preferences",
+        "items": {
+          "type": "object",
+          "required": ["email", "role", "notify"],
+          "properties": {
+            "email": { "type": "string", "description": "Attendee's email address" },
+            "name": { "type": "string", "description": "Optional display name of the attendee" },
+            "role": { "type": "string", "description": "Attendee role: required, optional, or organizer" },
+            "notify": { "type": "boolean", "description": "Whether to send this attendee an invitation and event updates" }
+          }
+        }
+      },
+      "location": { "type": "string", "description": "Optional event location" },
+      "conference": {
+        "type": "object",
+        "description": "Optional virtual conference details",
+        "properties": {
+          "provider": { "type": "string", "description": "Conferencing provider: zoom, teams, meet, or custom" },
+          "auto_create": { "type": "boolean", "description": "If true, automatically create a meeting link via the provider's API" },
+          "dial_in_numbers": {
+            "type": "array",
+            "description": "Optional list of dial-in phone numbers for participants without internet access",
+            "items": {
+              "type": "object",
+              "properties": {
+                "country": { "type": "string", "description": "Country name or ISO code for this dial-in number" },
+                "number": { "type": "string", "description": "E.164 dial-in phone number" }
+              }
+            }
+          }
+        }
+      },
+      "reminders": {
+        "type": "array",
+        "description": "Optional list of reminders to send before each occurrence",
+        "items": {
+          "type": "object",
+          "properties": {
+            "minutes_before": { "type": "integer", "description": "Number of minutes before the event start to send this reminder" },
+            "channels": {
+              "type": "array",
+              "description": "Channels for this reminder: email, sms, or push",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      },
+      "exceptions": {
+        "type": "array",
+        "description": "Optional list of ISO8601 dates on which the recurring event should be skipped",
+        "items": { "type": "string" }
+      },
+      "visibility": { "type": "string", "description": "Optional event visibility: public, private, or tentative" },
+      "color": { "type": "string", "description": "Optional hex colour code for calendar display (e.g. #FF5733)" },
+      "categories": {
+        "type": "array",
+        "description": "Optional list of category labels for the event",
+        "items": { "type": "string" }
+      },
+      "end_datetime": { "type": "string", "description": "Optional ISO8601 datetime; if provided, overrides duration_minutes for the last occurrence" }
     }
   },
   "sample_payload": {
@@ -40,6 +100,19 @@
       "end_type": "count",
       "count": 12
     },
-    "attendees": ["alice@example.com", "bob@example.com"]
+    "attendees": [
+      { "email": "alice@example.com", "name": "Alice Johnson", "role": "organizer", "notify": true },
+      { "email": "bob@example.com", "name": "Bob Smith", "role": "required", "notify": true },
+      { "email": "carol@example.com", "name": "Carol Lee", "role": "optional", "notify": true }
+    ],
+    "conference": {
+      "provider": "zoom",
+      "auto_create": true
+    },
+    "reminders": [
+      { "minutes_before": 30, "channels": ["email"] },
+      { "minutes_before": 5, "channels": ["push"] }
+    ],
+    "visibility": "private"
   }
 }

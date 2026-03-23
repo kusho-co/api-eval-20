@@ -13,21 +13,48 @@
       "user_id": { "type": "string", "description": "Path parameter: ID of the user whose preferences are being set" },
       "channels": {
         "type": "object",
-        "description": "Enabled notification delivery channels",
+        "description": "Notification delivery channel configuration",
         "properties": {
-          "email": { "type": "boolean" },
-          "sms": { "type": "boolean" },
-          "push": { "type": "boolean" }
+          "email": {
+            "type": "object",
+            "description": "Email channel settings",
+            "properties": {
+              "enabled": { "type": "boolean", "description": "Whether the email channel is active for this user" },
+              "verified": { "type": "boolean", "description": "Read-only hint indicating whether the email address has been verified" },
+              "address": { "type": "string", "description": "Optional override email address for notifications; defaults to the account email" }
+            }
+          },
+          "sms": {
+            "type": "object",
+            "description": "SMS channel settings",
+            "properties": {
+              "enabled": { "type": "boolean", "description": "Whether the SMS channel is active for this user" },
+              "verified": { "type": "boolean", "description": "Read-only hint indicating whether the phone number has been verified" },
+              "address": { "type": "string", "description": "Optional E.164 phone number to use for SMS notifications; defaults to the account phone" }
+            }
+          },
+          "push": {
+            "type": "object",
+            "description": "Push notification channel settings",
+            "properties": {
+              "enabled": { "type": "boolean", "description": "Whether push notifications are active for this user" },
+              "verified": { "type": "boolean", "description": "Read-only hint indicating whether a device token has been registered" },
+              "address": { "type": "string", "description": "Optional device token or endpoint identifier; typically managed by the push config endpoint" }
+            }
+          }
         }
       },
-      "frequency": { "type": "string", "description": "Notification delivery frequency: realtime, daily_digest, or weekly_digest" },
+      "frequency": { "type": "string", "description": "Default notification delivery frequency: realtime, daily_digest, or weekly_digest" },
       "categories": {
         "type": "object",
         "description": "Per-category opt-in flags",
         "properties": {
           "marketing": { "type": "boolean" },
           "transactional": { "type": "boolean" },
-          "security": { "type": "boolean" }
+          "security": { "type": "boolean" },
+          "reminders": { "type": "boolean" },
+          "social": { "type": "boolean" },
+          "product_updates": { "type": "boolean" }
         }
       },
       "quiet_hours": {
@@ -38,13 +65,58 @@
           "start": { "type": "string", "description": "Start time in HH:MM format; required when enabled is true" },
           "end": { "type": "string", "description": "End time in HH:MM format; required when enabled is true" }
         }
-      }
+      },
+      "per_category_overrides": {
+        "type": "object",
+        "description": "Optional per-category channel and frequency overrides that take precedence over the top-level settings",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "channels": {
+              "type": "object",
+              "properties": {
+                "email": { "type": "boolean" },
+                "sms": { "type": "boolean" },
+                "push": { "type": "boolean" }
+              }
+            },
+            "frequency": { "type": "string", "description": "Override frequency for this category: realtime, daily_digest, or weekly_digest" }
+          }
+        }
+      },
+      "digest_schedule": {
+        "type": "object",
+        "description": "Optional schedule configuration used when frequency is daily_digest or weekly_digest",
+        "properties": {
+          "day_of_week": { "type": "string", "description": "Day of week for weekly digest delivery: mon, tue, wed, thu, fri, sat, or sun" },
+          "time": { "type": "string", "description": "Delivery time in HH:MM format (24-hour)" },
+          "timezone": { "type": "string", "description": "IANA timezone identifier for the delivery time" }
+        }
+      },
+      "unsubscribe_all": { "type": "boolean", "description": "Master kill switch; when true, no notifications are sent regardless of other settings" },
+      "language": { "type": "string", "description": "Optional BCP47 language tag for notification content localisation (e.g. en-US)" }
     }
   },
   "sample_payload": {
     "user_id": "usr_4821",
-    "channels": { "email": true, "sms": false, "push": true },
+    "channels": {
+      "email": { "enabled": true, "address": "alice@example.com" },
+      "sms": { "enabled": false },
+      "push": { "enabled": true }
+    },
     "frequency": "realtime",
-    "categories": { "marketing": false, "transactional": true, "security": true }
+    "categories": {
+      "marketing": false,
+      "transactional": true,
+      "security": true
+    },
+    "per_category_overrides": {
+      "security": {
+        "channels": { "email": true, "sms": true, "push": true },
+        "frequency": "realtime"
+      }
+    },
+    "digest_schedule": null,
+    "language": "en-US"
   }
 }

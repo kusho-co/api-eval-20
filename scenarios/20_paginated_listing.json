@@ -23,9 +23,18 @@
           "tags": { "type": "array", "description": "Optional list of tag strings to filter by", "items": { "type": "string" } },
           "condition": { "type": "string", "description": "Optional product condition: new, used, or refurbished" },
           "price_min": { "type": "number", "description": "Optional minimum price filter" },
-          "price_max": { "type": "number", "description": "Optional maximum price filter" }
+          "price_max": { "type": "number", "description": "Optional maximum price filter" },
+          "rating_min": { "type": "number", "description": "Optional minimum average rating filter; valid range 1–5" },
+          "seller_id": { "type": "string", "description": "Optional seller ID to scope results to a single seller" },
+          "attributes": {
+            "type": "object",
+            "description": "Optional arbitrary product attribute filters (e.g. color, size, storage)",
+            "additionalProperties": { "type": "string" }
+          }
         }
-      }
+      },
+      "include_out_of_stock": { "type": "boolean", "description": "Whether to include out-of-stock products in the results; defaults to false" },
+      "locale": { "type": "string", "description": "Optional BCP47 locale tag used to localise product names and prices (e.g. en-US)" }
     }
   },
   "sample_payload": {
@@ -33,6 +42,17 @@
     "page": 1,
     "page_size": 25,
     "sort_by": "popularity",
-    "sort_order": "desc"
+    "sort_order": "desc",
+    "filters": {
+      "price_min": 50.00,
+      "price_max": 500.00,
+      "condition": "new",
+      "rating_min": 4.0,
+      "attributes": {
+        "color": "black",
+        "storage": "256GB"
+      }
+    },
+    "locale": "en-US"
   }
 }

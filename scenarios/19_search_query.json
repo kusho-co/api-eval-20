@@ -19,20 +19,133 @@
           "price_min": { "type": "number", "description": "Optional minimum price filter" },
           "price_max": { "type": "number", "description": "Optional maximum price filter" },
           "in_stock": { "type": "boolean", "description": "Optional filter to only return in-stock products" },
-          "rating_min": { "type": "number", "description": "Optional minimum average rating filter; valid range 1–5" }
+          "rating_min": { "type": "number", "description": "Optional minimum average rating filter; valid range 1–5" },
+          "seller_ids": {
+            "type": "array",
+            "description": "Optional list of seller IDs to restrict results to",
+            "items": { "type": "string" }
+          },
+          "brand_ids": {
+            "type": "array",
+            "description": "Optional list of brand IDs to restrict results to",
+            "items": { "type": "string" }
+          },
+          "attribute_filters": {
+            "type": "array",
+            "description": "Optional structured attribute filters for precise product matching",
+            "items": {
+              "type": "object",
+              "required": ["attribute", "operator", "value"],
+              "properties": {
+                "attribute": { "type": "string", "description": "Name of the product attribute (e.g. color, battery_life_hours)" },
+                "operator": { "type": "string", "description": "Comparison operator: eq (equals), in (one of), or range" },
+                "value": { "description": "Filter value; a scalar for eq, an array for in, or an object with min/max keys for range" }
+              }
+            }
+          },
+          "geo": {
+            "type": "object",
+            "description": "Optional geographic proximity filter for location-aware product listings",
+            "properties": {
+              "lat": { "type": "number", "description": "Latitude of the centre point" },
+              "lng": { "type": "number", "description": "Longitude of the centre point" },
+              "radius_km": { "type": "number", "description": "Search radius in kilometres" }
+            }
+          },
+          "date_range": {
+            "type": "object",
+            "description": "Optional date range filter applied to a specific date field",
+            "properties": {
+              "field": { "type": "string", "description": "Name of the date field to filter (e.g. created_at, updated_at)" },
+              "from": { "type": "string", "description": "ISO8601 start datetime (inclusive)" },
+              "to": { "type": "string", "description": "ISO8601 end datetime (inclusive)" }
+            }
+          }
         }
       },
       "sort_by": { "type": "string", "description": "Sort order: relevance, price_asc, price_desc, rating, or newest" },
       "page": { "type": "integer", "description": "Page number; minimum 1" },
       "page_size": { "type": "integer", "description": "Results per page; minimum 1, maximum 100" },
-      "include_facets": { "type": "boolean", "description": "If true, include facet aggregations in the response; defaults to false" }
+      "include_facets": { "type": "boolean", "description": "If true, include facet aggregations in the response; defaults to false" },
+      "facets": {
+        "type": "object",
+        "description": "Optional fine-grained facet configuration; takes precedence over include_facets when provided",
+        "properties": {
+          "enabled": { "type": "boolean", "description": "Whether to compute facet aggregations" },
+          "fields": {
+            "type": "array",
+            "description": "List of fields to aggregate facets for (e.g. brand, price_range, rating)",
+            "items": { "type": "string" }
+          },
+          "max_values_per_facet": { "type": "integer", "description": "Optional maximum number of values to return per facet field" }
+        }
+      },
+      "boost": {
+        "type": "array",
+        "description": "Optional list of field-value boost rules to promote certain results",
+        "items": {
+          "type": "object",
+          "required": ["field", "value", "factor"],
+          "properties": {
+            "field": { "type": "string", "description": "Field name to match for boosting" },
+            "value": { "description": "Value that triggers the boost" },
+            "factor": { "type": "number", "description": "Score multiplier; values greater than 1 promote, less than 1 demote" }
+          }
+        }
+      },
+      "personalization": {
+        "type": "object",
+        "description": "Optional personalization signals to tailor search ranking for the requesting user",
+        "properties": {
+          "user_id": { "type": "string", "description": "ID of the user; used to load browsing history and preferences" },
+          "use_history": { "type": "boolean", "description": "Whether to factor in the user's past browsing and purchase history" },
+          "use_location": { "type": "boolean", "description": "Whether to factor in the user's current location for proximity ranking" }
+        }
+      },
+      "spell_check": { "type": "boolean", "description": "Whether to attempt spell correction on the query string; defaults to true" },
+      "synonyms_enabled": { "type": "boolean", "description": "Whether to expand the query using the configured synonym dictionary; defaults to true" },
+      "highlight": {
+        "type": "object",
+        "description": "Optional configuration for query-term highlighting in search result snippets",
+        "properties": {
+          "enabled": { "type": "boolean", "description": "Whether to return highlighted fragments in results" },
+          "fields": {
+            "type": "array",
+            "description": "List of fields to apply highlighting to",
+            "items": { "type": "string" }
+          },
+          "fragment_size": { "type": "integer", "description": "Optional maximum character length of each highlighted fragment" }
+        }
+      },
+      "locale": { "type": "string", "description": "Optional BCP47 locale used to localise prices, dates, and sort behaviour (e.g. en-US)" }
     }
   },
   "sample_payload": {
     "query": "wireless headphones",
-    "filters": { "category": "electronics", "price_max": 200.00, "in_stock": true },
+    "filters": {
+      "category": "electronics",
+      "price_max": 200.00,
+      "in_stock": true,
+      "attribute_filters": [
+        { "attribute": "color", "operator": "in", "value": ["black", "white"] },
+        { "attribute": "battery_life_hours", "operator": "range", "value": { "min": 20 } }
+      ]
+    },
     "sort_by": "relevance",
     "page": 1,
-    "page_size": 20
+    "page_size": 20,
+    "facets": {
+      "enabled": true,
+      "fields": ["brand", "price_range", "rating"]
+    },
+    "personalization": {
+      "user_id": "usr_4821",
+      "use_history": true,
+      "use_location": false
+    },
+    "highlight": {
+      "enabled": true,
+      "fields": ["title", "description"]
+    }
   }
 }

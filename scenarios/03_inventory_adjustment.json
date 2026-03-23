@@ -15,7 +15,24 @@
       "adjustment_type": { "type": "string", "description": "Type of adjustment: add, remove, or set" },
       "quantity": { "type": "integer", "description": "Quantity to add, remove, or set" },
       "reason": { "type": "string", "description": "Reason for the adjustment: restock, sale, damage, audit, or transfer" },
-      "performed_by": { "type": "string", "description": "User ID of the operator performing the adjustment" }
+      "performed_by": { "type": "string", "description": "User ID of the operator performing the adjustment" },
+      "unit_cost": { "type": "number", "description": "Optional cost per unit for this adjustment, used for inventory valuation" },
+      "batch_id": { "type": "string", "description": "Optional batch identifier for lot tracking" },
+      "expiry_date": { "type": "string", "description": "Optional ISO 8601 date (YYYY-MM-DD) for the expiry of this batch" },
+      "notes": { "type": "string", "description": "Optional free-text notes about the adjustment" },
+      "notify": {
+        "type": "object",
+        "description": "Optional configuration for low-stock notifications triggered by this adjustment",
+        "properties": {
+          "on_low_stock": { "type": "boolean", "description": "If true, send a notification when stock falls below the threshold" },
+          "threshold": { "type": "integer", "description": "Stock level at or below which a low-stock notification is sent" }
+        }
+      },
+      "tags": {
+        "type": "array",
+        "description": "Optional list of tags for categorising or searching adjustments",
+        "items": { "type": "string" }
+      }
     }
   },
   "sample_payload": {
@@ -24,6 +41,13 @@
     "adjustment_type": "add",
     "quantity": 50,
     "reason": "restock",
-    "performed_by": "usr_ops_77"
+    "performed_by": "usr_ops_77",
+    "unit_cost": 12.50,
+    "batch_id": "batch_2026_04",
+    "notes": "Spring restock cycle",
+    "notify": {
+      "on_low_stock": true,
+      "threshold": 10
+    }
   }
 }

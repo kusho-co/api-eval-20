@@ -8,18 +8,30 @@
   "bug_count": { "simple": 2, "moderate": 2, "complex": 2, "total": 6 },
   "schema": {
     "type": "object",
-    "required": ["user_id", "items", "currency", "shipping"],
+    "required": ["user_id", "items", "currency", "shipping", "billing", "payment"],
     "properties": {
       "user_id": { "type": "string", "description": "ID of the user placing the order" },
       "items": {
         "type": "array",
-        "description": "List of items to order, each with product_id, quantity, and unit_price",
+        "description": "List of items to order",
         "items": {
           "type": "object",
+          "required": ["product_id", "quantity", "unit_price"],
           "properties": {
-            "product_id": { "type": "string" },
-            "quantity": { "type": "integer" },
-            "unit_price": { "type": "number" }
+            "product_id": { "type": "string", "description": "ID of the product" },
+            "variant_id": { "type": "string", "description": "Optional variant ID (e.g. size, colour)" },
+            "quantity": { "type": "integer", "description": "Number of units" },
+            "unit_price": { "type": "number", "description": "Price per unit at time of order" },
+            "discount_override": { "type": "number", "description": "Optional per-item discount amount that overrides any automatically applied discount" },
+            "customization": {
+              "type": "object",
+              "description": "Optional item-level customization options",
+              "properties": {
+                "engraving": { "type": "string", "description": "Text to engrave on the item" },
+                "gift_wrap": { "type": "boolean", "description": "Whether the item should be gift-wrapped" },
+                "gift_message": { "type": "string", "description": "Optional message to include with gift wrap" }
+              }
+            }
           }
         }
       },
@@ -27,11 +39,66 @@
       "currency": { "type": "string", "description": "ISO 4217 currency code (e.g. USD, EUR)" },
       "shipping": {
         "type": "object",
-        "description": "Shipping details including address, method, and country",
+        "description": "Shipping details including address, method, and recipient information",
+        "required": ["address", "method", "country", "recipient_name"],
         "properties": {
-          "address": { "type": "string" },
+          "recipient_name": { "type": "string", "description": "Full name of the shipment recipient" },
+          "phone": { "type": "string", "description": "Optional E.164 phone number for delivery notifications" },
+          "address": { "type": "string", "description": "Full street address of the delivery location" },
           "method": { "type": "string", "description": "Shipping method: standard, express, or overnight" },
-          "country": { "type": "string", "description": "ISO 3166-1 alpha-2 country code" }
+          "country": { "type": "string", "description": "ISO 3166-1 alpha-2 country code" },
+          "instructions": { "type": "string", "description": "Optional special delivery instructions for the carrier" },
+          "signature_required": { "type": "boolean", "description": "Optional flag to require a signature upon delivery" }
+        }
+      },
+      "billing": {
+        "type": "object",
+        "description": "Billing information for the order",
+        "required": ["same_as_shipping", "address", "name"],
+        "properties": {
+          "same_as_shipping": { "type": "boolean", "description": "If true, billing address is copied from the shipping address" },
+          "name": { "type": "string", "description": "Name as it appears on the billing account or card" },
+          "address": {
+            "type": "object",
+            "description": "Billing address",
+            "properties": {
+              "line1": { "type": "string" },
+              "line2": { "type": "string" },
+              "city": { "type": "string" },
+              "state": { "type": "string" },
+              "postal_code": { "type": "string" },
+              "country": { "type": "string", "description": "ISO 3166-1 alpha-2 country code" }
+            }
+          }
+        }
+      },
+      "payment": {
+        "type": "object",
+        "description": "Payment details for the order",
+        "required": ["method", "token"],
+        "properties": {
+          "method": { "type": "string", "description": "Payment method: card, wallet, or buy_now_pay_later" },
+          "token": { "type": "string", "description": "Tokenised payment instrument reference" },
+          "save_for_future": { "type": "boolean", "description": "Optional flag to save the payment method for future orders" }
+        }
+      },
+      "fulfillment_preference": {
+        "type": "object",
+        "description": "Optional preferences that govern how the order is fulfilled",
+        "properties": {
+          "allow_partial": { "type": "boolean", "description": "Whether to allow partial shipment if not all items are available simultaneously" },
+          "consolidate_shipments": { "type": "boolean", "description": "Whether to consolidate items into as few shipments as possible" },
+          "preferred_carrier": { "type": "string", "description": "Optional preferred carrier name (e.g. FedEx, UPS, USPS)" }
+        }
+      },
+      "gift_order": { "type": "boolean", "description": "Optional flag indicating this is a gift order; suppresses price information in packing slip" },
+      "metadata": {
+        "type": "object",
+        "description": "Optional metadata about how and where the order was placed",
+        "properties": {
+          "source": { "type": "string", "description": "Order origin: web, mobile, or api" },
+          "session_id": { "type": "string", "description": "Browser or app session identifier" },
+          "ab_variant": { "type": "string", "description": "Optional A/B test variant the user was assigned to" }
         }
       }
     }
@@ -39,14 +106,56 @@
   "sample_payload": {
     "user_id": "usr_4821",
     "items": [
-      { "product_id": "prod_991", "quantity": 2, "unit_price": 29.99 }
+      {
+        "product_id": "prod_991",
+        "quantity": 2,
+        "unit_price": 29.99,
+        "variant_id": "var_red_m"
+      },
+      {
+        "product_id": "prod_442",
+        "quantity": 1,
+        "unit_price": 79.99,
+        "customization": {
+          "engraving": "Happy Birthday!",
+          "gift_wrap": true,
+          "gift_message": "Enjoy your gift!"
+        }
+      }
     ],
     "coupon_code": "SAVE10",
     "currency": "USD",
     "shipping": {
+      "recipient_name": "Alice Johnson",
+      "phone": "+14155550101",
       "address": "123 Main St, Springfield, IL 62701",
       "method": "standard",
-      "country": "US"
+      "country": "US",
+      "instructions": "Leave at front door if no answer"
+    },
+    "billing": {
+      "same_as_shipping": false,
+      "name": "Alice Johnson",
+      "address": {
+        "line1": "456 Oak Ave",
+        "city": "San Francisco",
+        "state": "CA",
+        "postal_code": "94102",
+        "country": "US"
+      }
+    },
+    "payment": {
+      "method": "card",
+      "token": "tok_visa_4242",
+      "save_for_future": true
+    },
+    "fulfillment_preference": {
+      "allow_partial": false,
+      "consolidate_shipments": true
+    },
+    "metadata": {
+      "source": "web",
+      "session_id": "sess_abc123"
     }
   }
 }

@@ -17,7 +17,31 @@
       "duration_minutes": { "type": "integer", "description": "Duration of the appointment in minutes; must be positive" },
       "timezone": { "type": "string", "description": "IANA timezone identifier (e.g. America/New_York)" },
       "notes": { "type": "string", "description": "Optional notes for the provider" },
-      "reminder_minutes": { "type": "integer", "description": "Optional minutes before appointment to send a reminder; must be positive" }
+      "reminder_minutes": { "type": "integer", "description": "Optional minutes before appointment to send a reminder; must be positive" },
+      "payment": {
+        "type": "object",
+        "description": "Optional payment details for the appointment",
+        "properties": {
+          "method": { "type": "string", "description": "Payment method: card, wallet, or insurance" },
+          "card_last4": { "type": "string", "description": "Last 4 digits of the card used; applicable when method is card" },
+          "insurance_id": { "type": "string", "description": "Insurance policy identifier; applicable when method is insurance" }
+        }
+      },
+      "intake_form": {
+        "type": "object",
+        "description": "Optional pre-appointment intake form submitted by the patient",
+        "properties": {
+          "chief_complaint": { "type": "string", "description": "Primary reason for the appointment" },
+          "allergies": { "type": "array", "description": "List of known allergies", "items": { "type": "string" } },
+          "last_visit": { "type": "string", "description": "Optional ISO 8601 date of the patient's last visit" }
+        }
+      },
+      "send_confirmation": { "type": "boolean", "description": "Whether to send a booking confirmation to the user; defaults to true" },
+      "confirmation_channels": {
+        "type": "array",
+        "description": "Optional list of channels on which to send the confirmation: email, sms, or push",
+        "items": { "type": "string" }
+      }
     }
   },
   "sample_payload": {
@@ -26,6 +50,12 @@
     "service_id": "svc_haircut_01",
     "start_time": "2026-04-15T10:00:00",
     "duration_minutes": 30,
-    "timezone": "America/New_York"
+    "timezone": "America/New_York",
+    "payment": {
+      "method": "card",
+      "card_last4": "4242"
+    },
+    "send_confirmation": true,
+    "confirmation_channels": ["email", "sms"]
   }
 }

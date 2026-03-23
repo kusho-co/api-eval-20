@@ -8,8 +8,9 @@
   "bug_count": { "simple": 2, "moderate": 2, "complex": 2, "total": 6 },
   "schema": {
     "type": "object",
-    "required": ["from_account_id", "to_account_id", "amount", "currency", "transaction_type"],
+    "required": ["idempotency_key", "from_account_id", "to_account_id", "amount", "currency", "transaction_type"],
     "properties": {
+      "idempotency_key": { "type": "string", "description": "UUID used to deduplicate retried requests; requests with the same key return the original result without re-executing" },
       "from_account_id": { "type": "string", "description": "Account ID to debit" },
       "to_account_id": { "type": "string", "description": "Account ID to credit" },
       "amount": { "type": "number", "description": "Transaction amount; must be positive" },
@@ -17,16 +18,85 @@
       "transaction_type": { "type": "string", "description": "Type of transaction: debit, credit, or transfer" },
       "reference": { "type": "string", "description": "Optional external reference (e.g. invoice number)" },
       "description": { "type": "string", "description": "Optional human-readable description" },
-      "scheduled_at": { "type": "string", "description": "Optional ISO8601 datetime to schedule the transaction; if omitted, executes immediately" }
+      "scheduled_at": { "type": "string", "description": "Optional ISO8601 datetime to schedule the transaction; if omitted, executes immediately" },
+      "fee": {
+        "type": "object",
+        "description": "Optional fee associated with this transaction",
+        "properties": {
+          "amount": { "type": "number", "description": "Fee amount; must be positive" },
+          "currency": { "type": "string", "description": "ISO 4217 currency code of the fee" },
+          "bearer": { "type": "string", "description": "Who bears the fee: sender, receiver, or split" }
+        }
+      },
+      "exchange_rate": {
+        "type": "object",
+        "description": "Optional exchange rate details used when the from and to accounts hold different currencies",
+        "properties": {
+          "rate": { "type": "number", "description": "Exchange rate applied (from_currency to to_currency)" },
+          "provider": { "type": "string", "description": "Name of the exchange rate provider" },
+          "locked_until": { "type": "string", "description": "ISO8601 datetime until which the rate is guaranteed" }
+        }
+      },
+      "compliance": {
+        "type": "object",
+        "description": "Optional compliance and regulatory information for the transaction",
+        "properties": {
+          "purpose_code": { "type": "string", "description": "Regulatory purpose code (e.g. SUPP for supplier payment, SALA for salary)" },
+          "source_of_funds": { "type": "string", "description": "Declared source of funds: salary, savings, investment, or other" },
+          "sanctions_check_id": { "type": "string", "description": "Optional ID of an external sanctions screening check result" }
+        }
+      },
+      "limits": {
+        "type": "object",
+        "description": "Optional limit thresholds to validate the transaction against before execution",
+        "properties": {
+          "daily_limit": { "type": "number", "description": "Maximum cumulative transfer amount allowed per day for the from account" },
+          "per_transaction_limit": { "type": "number", "description": "Maximum amount allowed for a single transaction" }
+        }
+      },
+      "notification": {
+        "type": "object",
+        "description": "Optional notification configuration for transaction events",
+        "properties": {
+          "notify_sender": { "type": "boolean", "description": "Whether to notify the sender account holder on completion" },
+          "notify_receiver": { "type": "boolean", "description": "Whether to notify the receiver account holder on completion" },
+          "channels": {
+            "type": "array",
+            "description": "Channels to use for notifications: email, sms, or push",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "tags": {
+        "type": "array",
+        "description": "Optional tags for categorising or searching transactions",
+        "items": { "type": "string" }
+      },
+      "metadata": {
+        "type": "object",
+        "description": "Optional arbitrary key-value metadata attached to the transaction",
+        "additionalProperties": { "type": "string" }
+      }
     }
   },
   "sample_payload": {
+    "idempotency_key": "550e8400-e29b-41d4-a716-446655440000",
     "from_account_id": "acc_8821",
     "to_account_id": "acc_1134",
     "amount": 250.00,
     "currency": "USD",
     "transaction_type": "transfer",
     "reference": "INV-2026-0042",
-    "description": "Invoice payment"
+    "description": "Invoice payment",
+    "compliance": {
+      "purpose_code": "SUPP",
+      "source_of_funds": "salary"
+    },
+    "notification": {
+      "notify_sender": true,
+      "notify_receiver": true,
+      "channels": ["email"]
+    },
+    "tags": ["invoice", "supplier"]
   }
 }

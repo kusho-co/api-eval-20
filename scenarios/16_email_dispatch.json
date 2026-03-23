@@ -27,7 +27,39 @@
       "template_id": { "type": "string", "description": "Optional template ID; if provided, body is ignored" },
       "body": { "type": "string", "description": "Email body content; required when template_id is not provided" },
       "cc": { "type": "array", "description": "Optional list of CC email addresses", "items": { "type": "string" } },
-      "priority": { "type": "string", "description": "Send priority: low, normal, or high" }
+      "priority": { "type": "string", "description": "Send priority: low, normal, or high" },
+      "headers": {
+        "type": "object",
+        "description": "Optional custom email headers as arbitrary string key-value pairs",
+        "additionalProperties": { "type": "string" }
+      },
+      "tracking": {
+        "type": "object",
+        "description": "Optional tracking configuration for this email send",
+        "properties": {
+          "open_tracking": { "type": "boolean", "description": "Whether to track email opens" },
+          "click_tracking": { "type": "boolean", "description": "Whether to track link clicks within the email" },
+          "utm_campaign": { "type": "string", "description": "Optional UTM campaign identifier appended to tracked links" }
+        }
+      },
+      "send_at": { "type": "string", "description": "Optional ISO8601 datetime to schedule the email for future delivery; if omitted, sends immediately" },
+      "tags": {
+        "type": "array",
+        "description": "Optional list of tags for categorising and filtering sent emails",
+        "items": { "type": "string" }
+      },
+      "attachments": {
+        "type": "array",
+        "description": "Optional list of file attachments",
+        "items": {
+          "type": "object",
+          "properties": {
+            "filename": { "type": "string", "description": "Name of the file as it will appear to the recipient" },
+            "content_type": { "type": "string", "description": "MIME type of the attachment (e.g. application/pdf)" },
+            "url": { "type": "string", "description": "Publicly accessible URL from which the attachment content will be fetched" }
+          }
+        }
+      }
     }
   },
   "sample_payload": {
@@ -35,6 +67,12 @@
     "from_name": "KushoAI",
     "subject": "Your weekly summary",
     "body": "Here is your activity for this week.",
-    "priority": "normal"
+    "priority": "normal",
+    "tracking": {
+      "open_tracking": true,
+      "click_tracking": true,
+      "utm_campaign": "weekly-digest-2026-04"
+    },
+    "tags": ["digest", "weekly"]
   }
 }

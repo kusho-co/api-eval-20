@@ -28,7 +28,20 @@
           "end": { "type": "string", "description": "End time in HH:MM format" },
           "timezone": { "type": "string", "description": "IANA timezone identifier" }
         }
-      }
+      },
+      "notification_types": {
+        "type": "object",
+        "description": "Optional configuration for which notification presentation types are permitted on the device",
+        "properties": {
+          "badge": { "type": "boolean", "description": "Whether badge count updates are enabled" },
+          "sound": { "type": "boolean", "description": "Whether notification sounds are enabled" },
+          "alert": { "type": "boolean", "description": "Whether visible alert notifications are enabled" }
+        }
+      },
+      "badge_count": { "type": "integer", "description": "Optional initial badge count to set on the app icon" },
+      "sound_name": { "type": "string", "description": "Optional name of the sound file to play for notifications; use 'default' for the system default sound" },
+      "content_available": { "type": "boolean", "description": "Optional flag for iOS background fetch; when true, a silent push is delivered to wake the app" },
+      "expiry_seconds": { "type": "integer", "description": "Optional time-to-live in seconds for undelivered notifications; after this period the notification is discarded" }
     }
   },
   "sample_payload": {
@@ -42,6 +55,13 @@
       "start": "22:00",
       "end": "08:00",
       "timezone": "America/New_York"
-    }
+    },
+    "notification_types": {
+      "badge": true,
+      "sound": true,
+      "alert": true
+    },
+    "sound_name": "default",
+    "expiry_seconds": 86400
   }
 }

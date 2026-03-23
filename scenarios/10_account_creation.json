@@ -17,7 +17,59 @@
       "phone": { "type": "string", "description": "Optional E.164-format phone number" },
       "date_of_birth": { "type": "string", "description": "Optional ISO 8601 date (YYYY-MM-DD)" },
       "role": { "type": "string", "description": "Account role: customer, vendor, or admin" },
-      "terms_accepted": { "type": "boolean", "description": "Must be true; user must accept terms of service" }
+      "terms_accepted": { "type": "boolean", "description": "Must be true; user must accept terms of service" },
+      "address": {
+        "type": "object",
+        "description": "Optional home or primary mailing address",
+        "properties": {
+          "line1": { "type": "string", "description": "Primary street address line" },
+          "line2": { "type": "string", "description": "Optional secondary address line (apartment, suite, etc.)" },
+          "city": { "type": "string", "description": "City" },
+          "state": { "type": "string", "description": "State or province code" },
+          "postal_code": { "type": "string", "description": "Postal or ZIP code" },
+          "country": { "type": "string", "description": "ISO 3166-1 alpha-2 country code" }
+        }
+      },
+      "business": {
+        "type": "object",
+        "description": "Optional business details; applicable when role is vendor",
+        "properties": {
+          "company_name": { "type": "string", "description": "Legal name of the business" },
+          "tax_id": { "type": "string", "description": "Tax identification number (EIN, VAT, etc.)" },
+          "industry": { "type": "string", "description": "Industry sector of the business" },
+          "website": { "type": "string", "description": "Optional business website URL" },
+          "size": { "type": "string", "description": "Company headcount band: 1-10, 11-50, 51-200, 201-1000, or 1000+" }
+        }
+      },
+      "preferences": {
+        "type": "object",
+        "description": "Optional user preferences set at registration",
+        "properties": {
+          "language": { "type": "string", "description": "Preferred BCP47 language tag (e.g. en-US)" },
+          "timezone": { "type": "string", "description": "Preferred IANA timezone identifier (e.g. America/Chicago)" },
+          "currency": { "type": "string", "description": "Preferred ISO 4217 currency code (e.g. USD)" },
+          "marketing_opt_in": { "type": "boolean", "description": "Whether the user opts in to marketing communications" }
+        }
+      },
+      "emergency_contact": {
+        "type": "object",
+        "description": "Optional emergency contact information",
+        "properties": {
+          "name": { "type": "string", "description": "Full name of the emergency contact" },
+          "relationship": { "type": "string", "description": "Relationship to the user (e.g. spouse, parent, sibling)" },
+          "phone": { "type": "string", "description": "E.164-format phone number of the emergency contact" }
+        }
+      },
+      "referral_code": { "type": "string", "description": "Optional referral code from an existing user or campaign" },
+      "identity_verification": {
+        "type": "object",
+        "description": "Optional identity document details for KYC verification",
+        "properties": {
+          "document_type": { "type": "string", "description": "Type of identity document: passport, drivers_license, or national_id" },
+          "document_number": { "type": "string", "description": "Document number as it appears on the identity document" },
+          "issuing_country": { "type": "string", "description": "ISO 3166-1 alpha-2 code of the country that issued the document" }
+        }
+      }
     }
   },
   "sample_payload": {
@@ -27,6 +79,20 @@
     "last_name": "Smith",
     "phone": "+14155550123",
     "role": "customer",
-    "terms_accepted": true
+    "terms_accepted": true,
+    "address": {
+      "line1": "789 Elm Street",
+      "city": "Chicago",
+      "state": "IL",
+      "postal_code": "60601",
+      "country": "US"
+    },
+    "preferences": {
+      "language": "en-US",
+      "timezone": "America/Chicago",
+      "currency": "USD",
+      "marketing_opt_in": false
+    },
+    "referral_code": "REF-ALICE-99"
   }
 }
