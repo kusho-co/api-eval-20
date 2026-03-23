@@ -1,0 +1,38 @@
+{
+  "id": "19_search_query",
+  "version": "1.0",
+  "domain": "search-filtering",
+  "method": "POST",
+  "path": "/api/v1/search",
+  "description": "Execute a product search with filters, sorting, and pagination.",
+  "bug_count": { "simple": 1, "moderate": 2, "complex": 2, "total": 5 },
+  "schema": {
+    "type": "object",
+    "required": ["query", "sort_by", "page", "page_size"],
+    "properties": {
+      "query": { "type": "string", "description": "Search query string" },
+      "filters": {
+        "type": "object",
+        "description": "Optional filtering parameters",
+        "properties": {
+          "category": { "type": "string", "description": "Optional product category filter" },
+          "price_min": { "type": "number", "description": "Optional minimum price filter" },
+          "price_max": { "type": "number", "description": "Optional maximum price filter" },
+          "in_stock": { "type": "boolean", "description": "Optional filter to only return in-stock products" },
+          "rating_min": { "type": "number", "description": "Optional minimum average rating filter; valid range 1–5" }
+        }
+      },
+      "sort_by": { "type": "string", "description": "Sort order: relevance, price_asc, price_desc, rating, or newest" },
+      "page": { "type": "integer", "description": "Page number; minimum 1" },
+      "page_size": { "type": "integer", "description": "Results per page; minimum 1, maximum 100" },
+      "include_facets": { "type": "boolean", "description": "If true, include facet aggregations in the response; defaults to false" }
+    }
+  },
+  "sample_payload": {
+    "query": "wireless headphones",
+    "filters": { "category": "electronics", "price_max": 200.00, "in_stock": true },
+    "sort_by": "relevance",
+    "page": 1,
+    "page_size": 20
+  }
+}

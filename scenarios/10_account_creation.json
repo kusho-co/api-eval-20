@@ -1,0 +1,32 @@
+{
+  "id": "10_account_creation",
+  "version": "1.0",
+  "domain": "user-management",
+  "method": "POST",
+  "path": "/api/v1/users",
+  "description": "Create a new user account with profile details, role, and terms acceptance.",
+  "bug_count": { "simple": 2, "moderate": 2, "complex": 2, "total": 6 },
+  "schema": {
+    "type": "object",
+    "required": ["email", "password", "first_name", "last_name", "role", "terms_accepted"],
+    "properties": {
+      "email": { "type": "string", "description": "User's email address" },
+      "password": { "type": "string", "description": "User's password; minimum 8 characters" },
+      "first_name": { "type": "string", "description": "User's first name" },
+      "last_name": { "type": "string", "description": "User's last name" },
+      "phone": { "type": "string", "description": "Optional E.164-format phone number" },
+      "date_of_birth": { "type": "string", "description": "Optional ISO 8601 date (YYYY-MM-DD)" },
+      "role": { "type": "string", "description": "Account role: customer, vendor, or admin" },
+      "terms_accepted": { "type": "boolean", "description": "Must be true; user must accept terms of service" }
+    }
+  },
+  "sample_payload": {
+    "email": "bob@example.com",
+    "password": "Secur3P@ss",
+    "first_name": "Bob",
+    "last_name": "Smith",
+    "phone": "+14155550123",
+    "role": "customer",
+    "terms_accepted": true
+  }
+}

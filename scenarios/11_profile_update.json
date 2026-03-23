@@ -1,0 +1,29 @@
+{
+  "id": "11_profile_update",
+  "version": "1.0",
+  "domain": "user-management",
+  "method": "PATCH",
+  "path": "/api/v1/users/{user_id}/profile",
+  "description": "Partially update a user's public profile fields.",
+  "bug_count": { "simple": 1, "moderate": 2, "complex": 2, "total": 5 },
+  "schema": {
+    "type": "object",
+    "required": ["user_id"],
+    "properties": {
+      "user_id": { "type": "string", "description": "Path parameter: ID of the user whose profile is being updated" },
+      "first_name": { "type": "string", "description": "Optional updated first name" },
+      "last_name": { "type": "string", "description": "Optional updated last name" },
+      "phone": { "type": "string", "description": "Optional E.164-format phone number" },
+      "bio": { "type": "string", "description": "Optional biography text; maximum 500 characters" },
+      "avatar_url": { "type": "string", "description": "Optional avatar image URL; must use https scheme" },
+      "preferred_language": { "type": "string", "description": "Optional BCP 47 language tag (e.g. en-US)" }
+    }
+  },
+  "sample_payload": {
+    "user_id": "usr_4821",
+    "first_name": "Alice",
+    "last_name": "Johnson",
+    "bio": "Software engineer at KushoAI",
+    "preferred_language": "en-US"
+  }
+}

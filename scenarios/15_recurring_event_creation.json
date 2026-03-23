@@ -1,0 +1,45 @@
+{
+  "id": "15_recurring_event_creation",
+  "version": "1.0",
+  "domain": "scheduling",
+  "method": "POST",
+  "path": "/api/v1/events/recurring",
+  "description": "Create a recurring calendar event with configurable recurrence rules.",
+  "bug_count": { "simple": 1, "moderate": 2, "complex": 3, "total": 6 },
+  "schema": {
+    "type": "object",
+    "required": ["title", "organizer_id", "start_datetime", "duration_minutes", "recurrence"],
+    "properties": {
+      "title": { "type": "string", "description": "Title of the recurring event" },
+      "organizer_id": { "type": "string", "description": "User ID of the event organizer" },
+      "start_datetime": { "type": "string", "description": "ISO8601 datetime for the first occurrence" },
+      "duration_minutes": { "type": "integer", "description": "Duration of each occurrence in minutes; must be positive" },
+      "recurrence": {
+        "type": "object",
+        "description": "Recurrence rule configuration",
+        "properties": {
+          "frequency": { "type": "string", "description": "Recurrence frequency: daily, weekly, or monthly" },
+          "interval": { "type": "integer", "description": "Interval between occurrences; must be positive" },
+          "end_type": { "type": "string", "description": "How the recurrence ends: count, date, or never" },
+          "count": { "type": "integer", "description": "Number of occurrences; required when end_type is count" },
+          "end_date": { "type": "string", "description": "ISO8601 date after which no more occurrences are created; required when end_type is date" }
+        }
+      },
+      "attendees": { "type": "array", "description": "Optional list of attendee email addresses", "items": { "type": "string" } },
+      "location": { "type": "string", "description": "Optional event location" }
+    }
+  },
+  "sample_payload": {
+    "title": "Weekly Team Standup",
+    "organizer_id": "usr_4821",
+    "start_datetime": "2026-04-07T09:00:00",
+    "duration_minutes": 15,
+    "recurrence": {
+      "frequency": "weekly",
+      "interval": 1,
+      "end_type": "count",
+      "count": 12
+    },
+    "attendees": ["alice@example.com", "bob@example.com"]
+  }
+}

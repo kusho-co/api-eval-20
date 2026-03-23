@@ -1,0 +1,29 @@
+{
+  "id": "03_inventory_adjustment",
+  "version": "1.0",
+  "domain": "e-commerce",
+  "method": "POST",
+  "path": "/api/v1/inventory/adjust",
+  "description": "Adjust stock quantity for a product at a specific warehouse — add, remove, or set to an absolute value.",
+  "bug_count": { "simple": 1, "moderate": 2, "complex": 2, "total": 5 },
+  "schema": {
+    "type": "object",
+    "required": ["product_id", "warehouse_id", "adjustment_type", "quantity", "reason", "performed_by"],
+    "properties": {
+      "product_id": { "type": "string", "description": "ID of the product to adjust" },
+      "warehouse_id": { "type": "string", "description": "ID of the warehouse where the adjustment takes place" },
+      "adjustment_type": { "type": "string", "description": "Type of adjustment: add, remove, or set" },
+      "quantity": { "type": "integer", "description": "Quantity to add, remove, or set" },
+      "reason": { "type": "string", "description": "Reason for the adjustment: restock, sale, damage, audit, or transfer" },
+      "performed_by": { "type": "string", "description": "User ID of the operator performing the adjustment" }
+    }
+  },
+  "sample_payload": {
+    "product_id": "prod_991",
+    "warehouse_id": "wh_east_01",
+    "adjustment_type": "add",
+    "quantity": 50,
+    "reason": "restock",
+    "performed_by": "usr_ops_77"
+  }
+}

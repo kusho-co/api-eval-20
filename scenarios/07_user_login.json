@@ -1,0 +1,26 @@
+{
+  "id": "07_user_login",
+  "version": "1.0",
+  "domain": "authentication",
+  "method": "POST",
+  "path": "/api/v1/auth/login",
+  "description": "Authenticate a user with email and password, optionally providing an MFA token.",
+  "bug_count": { "simple": 2, "moderate": 1, "complex": 1, "total": 4 },
+  "schema": {
+    "type": "object",
+    "required": ["email", "password"],
+    "properties": {
+      "email": { "type": "string", "description": "User's email address" },
+      "password": { "type": "string", "description": "User's password" },
+      "device_id": { "type": "string", "description": "Optional device identifier for session binding" },
+      "mfa_token": { "type": "string", "description": "Optional 6-digit numeric MFA token" },
+      "remember_me": { "type": "boolean", "description": "If true, issue a long-lived session; defaults to false" }
+    }
+  },
+  "sample_payload": {
+    "email": "alice@example.com",
+    "password": "S3cur3Pass!",
+    "device_id": "dev_a1b2c3",
+    "remember_me": false
+  }
+}

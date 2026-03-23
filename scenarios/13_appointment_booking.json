@@ -1,0 +1,31 @@
+{
+  "id": "13_appointment_booking",
+  "version": "1.0",
+  "domain": "scheduling",
+  "method": "POST",
+  "path": "/api/v1/appointments",
+  "description": "Book an appointment slot with a service provider.",
+  "bug_count": { "simple": 2, "moderate": 2, "complex": 2, "total": 6 },
+  "schema": {
+    "type": "object",
+    "required": ["provider_id", "user_id", "service_id", "start_time", "duration_minutes", "timezone"],
+    "properties": {
+      "provider_id": { "type": "string", "description": "ID of the service provider" },
+      "user_id": { "type": "string", "description": "ID of the user booking the appointment" },
+      "service_id": { "type": "string", "description": "ID of the service being booked" },
+      "start_time": { "type": "string", "description": "ISO8601 datetime for the appointment start" },
+      "duration_minutes": { "type": "integer", "description": "Duration of the appointment in minutes; must be positive" },
+      "timezone": { "type": "string", "description": "IANA timezone identifier (e.g. America/New_York)" },
+      "notes": { "type": "string", "description": "Optional notes for the provider" },
+      "reminder_minutes": { "type": "integer", "description": "Optional minutes before appointment to send a reminder; must be positive" }
+    }
+  },
+  "sample_payload": {
+    "provider_id": "prov_551",
+    "user_id": "usr_4821",
+    "service_id": "svc_haircut_01",
+    "start_time": "2026-04-15T10:00:00",
+    "duration_minutes": 30,
+    "timezone": "America/New_York"
+  }
+}

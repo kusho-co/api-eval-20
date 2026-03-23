@@ -1,0 +1,50 @@
+{
+  "id": "18_notification_preferences",
+  "version": "1.0",
+  "domain": "notifications",
+  "method": "PUT",
+  "path": "/api/v1/users/{user_id}/notification-preferences",
+  "description": "Replace a user's notification channel and category preferences.",
+  "bug_count": { "simple": 1, "moderate": 2, "complex": 2, "total": 5 },
+  "schema": {
+    "type": "object",
+    "required": ["user_id", "channels", "frequency", "categories"],
+    "properties": {
+      "user_id": { "type": "string", "description": "Path parameter: ID of the user whose preferences are being set" },
+      "channels": {
+        "type": "object",
+        "description": "Enabled notification delivery channels",
+        "properties": {
+          "email": { "type": "boolean" },
+          "sms": { "type": "boolean" },
+          "push": { "type": "boolean" }
+        }
+      },
+      "frequency": { "type": "string", "description": "Notification delivery frequency: realtime, daily_digest, or weekly_digest" },
+      "categories": {
+        "type": "object",
+        "description": "Per-category opt-in flags",
+        "properties": {
+          "marketing": { "type": "boolean" },
+          "transactional": { "type": "boolean" },
+          "security": { "type": "boolean" }
+        }
+      },
+      "quiet_hours": {
+        "type": "object",
+        "description": "Optional quiet hours window; start and end are required when enabled is true",
+        "properties": {
+          "enabled": { "type": "boolean" },
+          "start": { "type": "string", "description": "Start time in HH:MM format; required when enabled is true" },
+          "end": { "type": "string", "description": "End time in HH:MM format; required when enabled is true" }
+        }
+      }
+    }
+  },
+  "sample_payload": {
+    "user_id": "usr_4821",
+    "channels": { "email": true, "sms": false, "push": true },
+    "frequency": "realtime",
+    "categories": { "marketing": false, "transactional": true, "security": true }
+  }
+}

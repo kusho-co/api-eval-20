@@ -1,0 +1,27 @@
+{
+  "id": "02_coupon_redemption",
+  "version": "1.0",
+  "domain": "e-commerce",
+  "method": "POST",
+  "path": "/api/v1/coupons/redeem",
+  "description": "Redeem a coupon code against an order total, validating eligibility and applying the discount.",
+  "bug_count": { "simple": 2, "moderate": 2, "complex": 1, "total": 5 },
+  "schema": {
+    "type": "object",
+    "required": ["user_id", "coupon_code", "order_total", "currency"],
+    "properties": {
+      "user_id": { "type": "string", "description": "ID of the user redeeming the coupon" },
+      "coupon_code": { "type": "string", "description": "Coupon code to redeem" },
+      "order_total": { "type": "number", "description": "Total order amount before discount; must be positive" },
+      "currency": { "type": "string", "description": "ISO 4217 currency code" },
+      "category": { "type": "string", "description": "Optional product category the coupon applies to" }
+    }
+  },
+  "sample_payload": {
+    "user_id": "usr_4821",
+    "coupon_code": "SUMMER20",
+    "order_total": 149.99,
+    "currency": "USD",
+    "category": "electronics"
+  }
+}

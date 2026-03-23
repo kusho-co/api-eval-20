@@ -1,0 +1,39 @@
+{
+  "id": "05_refund_processing",
+  "version": "1.0",
+  "domain": "payments",
+  "method": "POST",
+  "path": "/api/v1/refunds",
+  "description": "Process a full or partial refund for a completed order.",
+  "bug_count": { "simple": 1, "moderate": 2, "complex": 2, "total": 5 },
+  "schema": {
+    "type": "object",
+    "required": ["order_id", "transaction_id", "amount", "reason", "refund_method"],
+    "properties": {
+      "order_id": { "type": "string", "description": "ID of the order to refund" },
+      "transaction_id": { "type": "string", "description": "ID of the original transaction" },
+      "amount": { "type": "number", "description": "Refund amount; must be positive and not exceed original transaction amount" },
+      "reason": { "type": "string", "description": "Reason for the refund: customer_request, defective, not_as_described, duplicate, or other" },
+      "refund_method": { "type": "string", "description": "Refund delivery method: original, store_credit, or bank_transfer" },
+      "line_items": {
+        "type": "array",
+        "description": "Optional list of specific line items to refund; if omitted, full refund is assumed",
+        "items": {
+          "type": "object",
+          "properties": {
+            "item_id": { "type": "string" },
+            "quantity": { "type": "integer" },
+            "amount": { "type": "number" }
+          }
+        }
+      }
+    }
+  },
+  "sample_payload": {
+    "order_id": "ord_7743",
+    "transaction_id": "txn_9901",
+    "amount": 59.99,
+    "reason": "customer_request",
+    "refund_method": "original"
+  }
+}

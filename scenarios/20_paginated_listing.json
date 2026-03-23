@@ -1,0 +1,38 @@
+{
+  "id": "20_paginated_listing",
+  "version": "1.0",
+  "domain": "search-filtering",
+  "method": "POST",
+  "path": "/api/v1/products/list",
+  "description": "List products in a category with sorting and optional attribute filters.",
+  "bug_count": { "simple": 1, "moderate": 1, "complex": 2, "total": 4 },
+  "schema": {
+    "type": "object",
+    "required": ["category_id", "page", "page_size", "sort_by", "sort_order"],
+    "properties": {
+      "category_id": { "type": "string", "description": "ID of the category to list products from" },
+      "page": { "type": "integer", "description": "Page number; minimum 1" },
+      "page_size": { "type": "integer", "description": "Results per page; minimum 1, maximum 100" },
+      "sort_by": { "type": "string", "description": "Sort field: name, price, created_at, or popularity" },
+      "sort_order": { "type": "string", "description": "Sort direction: asc or desc" },
+      "filters": {
+        "type": "object",
+        "description": "Optional attribute filters",
+        "properties": {
+          "brand": { "type": "string", "description": "Optional brand name filter" },
+          "tags": { "type": "array", "description": "Optional list of tag strings to filter by", "items": { "type": "string" } },
+          "condition": { "type": "string", "description": "Optional product condition: new, used, or refurbished" },
+          "price_min": { "type": "number", "description": "Optional minimum price filter" },
+          "price_max": { "type": "number", "description": "Optional maximum price filter" }
+        }
+      }
+    }
+  },
+  "sample_payload": {
+    "category_id": "cat_electronics",
+    "page": 1,
+    "page_size": 25,
+    "sort_by": "popularity",
+    "sort_order": "desc"
+  }
+}

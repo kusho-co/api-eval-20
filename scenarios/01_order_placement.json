@@ -1,0 +1,52 @@
+{
+  "id": "01_order_placement",
+  "version": "1.0",
+  "domain": "e-commerce",
+  "method": "POST",
+  "path": "/api/v1/orders",
+  "description": "Place a new order with one or more items, shipping details, and an optional coupon code.",
+  "bug_count": { "simple": 2, "moderate": 2, "complex": 2, "total": 6 },
+  "schema": {
+    "type": "object",
+    "required": ["user_id", "items", "currency", "shipping"],
+    "properties": {
+      "user_id": { "type": "string", "description": "ID of the user placing the order" },
+      "items": {
+        "type": "array",
+        "description": "List of items to order, each with product_id, quantity, and unit_price",
+        "items": {
+          "type": "object",
+          "properties": {
+            "product_id": { "type": "string" },
+            "quantity": { "type": "integer" },
+            "unit_price": { "type": "number" }
+          }
+        }
+      },
+      "coupon_code": { "type": "string", "description": "Optional coupon code to apply to the order" },
+      "currency": { "type": "string", "description": "ISO 4217 currency code (e.g. USD, EUR)" },
+      "shipping": {
+        "type": "object",
+        "description": "Shipping details including address, method, and country",
+        "properties": {
+          "address": { "type": "string" },
+          "method": { "type": "string", "description": "Shipping method: standard, express, or overnight" },
+          "country": { "type": "string", "description": "ISO 3166-1 alpha-2 country code" }
+        }
+      }
+    }
+  },
+  "sample_payload": {
+    "user_id": "usr_4821",
+    "items": [
+      { "product_id": "prod_991", "quantity": 2, "unit_price": 29.99 }
+    ],
+    "coupon_code": "SAVE10",
+    "currency": "USD",
+    "shipping": {
+      "address": "123 Main St, Springfield, IL 62701",
+      "method": "standard",
+      "country": "US"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "id": "04_transaction_creation",
+  "version": "1.0",
+  "domain": "payments",
+  "method": "POST",
+  "path": "/api/v1/transactions",
+  "description": "Create a financial transaction between accounts — debit, credit, or transfer.",
+  "bug_count": { "simple": 2, "moderate": 2, "complex": 2, "total": 6 },
+  "schema": {
+    "type": "object",
+    "required": ["from_account_id", "to_account_id", "amount", "currency", "transaction_type"],
+    "properties": {
+      "from_account_id": { "type": "string", "description": "Account ID to debit" },
+      "to_account_id": { "type": "string", "description": "Account ID to credit" },
+      "amount": { "type": "number", "description": "Transaction amount; must be positive" },
+      "currency": { "type": "string", "description": "ISO 4217 currency code" },
+      "transaction_type": { "type": "string", "description": "Type of transaction: debit, credit, or transfer" },
+      "reference": { "type": "string", "description": "Optional external reference (e.g. invoice number)" },
+      "description": { "type": "string", "description": "Optional human-readable description" },
+      "scheduled_at": { "type": "string", "description": "Optional ISO8601 datetime to schedule the transaction; if omitted, executes immediately" }
+    }
+  },
+  "sample_payload": {
+    "from_account_id": "acc_8821",
+    "to_account_id": "acc_1134",
+    "amount": 250.00,
+    "currency": "USD",
+    "transaction_type": "transfer",
+    "reference": "INV-2026-0042",
+    "description": "Invoice payment"
+  }
+}

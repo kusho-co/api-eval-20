@@ -1,0 +1,26 @@
+{
+  "id": "06_currency_conversion",
+  "version": "1.0",
+  "domain": "payments",
+  "method": "POST",
+  "path": "/api/v1/currency/convert",
+  "description": "Convert an amount from one currency to another, optionally against a specific account.",
+  "bug_count": { "simple": 1, "moderate": 2, "complex": 1, "total": 4 },
+  "schema": {
+    "type": "object",
+    "required": ["from_currency", "to_currency", "amount", "rate_type"],
+    "properties": {
+      "from_currency": { "type": "string", "description": "Source ISO 4217 currency code" },
+      "to_currency": { "type": "string", "description": "Target ISO 4217 currency code" },
+      "amount": { "type": "number", "description": "Amount to convert; must be positive" },
+      "account_id": { "type": "string", "description": "Optional account ID; if provided, the account is debited after conversion" },
+      "rate_type": { "type": "string", "description": "Exchange rate type: spot or forward" }
+    }
+  },
+  "sample_payload": {
+    "from_currency": "USD",
+    "to_currency": "EUR",
+    "amount": 500.00,
+    "rate_type": "spot"
+  }
+}

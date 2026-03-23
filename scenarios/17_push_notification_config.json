@@ -1,0 +1,47 @@
+{
+  "id": "17_push_notification_config",
+  "version": "1.0",
+  "domain": "notifications",
+  "method": "POST",
+  "path": "/api/v1/notifications/push/config",
+  "description": "Register or update a device's push notification configuration for a user.",
+  "bug_count": { "simple": 1, "moderate": 2, "complex": 1, "total": 4 },
+  "schema": {
+    "type": "object",
+    "required": ["user_id", "device_token", "platform", "app_id", "categories"],
+    "properties": {
+      "user_id": { "type": "string", "description": "ID of the user registering the device" },
+      "device_token": { "type": "string", "description": "Platform push notification token (FCM, APNs, or web push)" },
+      "platform": { "type": "string", "description": "Device platform: ios, android, or web" },
+      "app_id": { "type": "string", "description": "Application bundle or package ID" },
+      "categories": {
+        "type": "array",
+        "description": "Notification categories to subscribe to; minimum 1. Valid values: marketing, transactional, security, reminders.",
+        "items": { "type": "string" }
+      },
+      "quiet_hours": {
+        "type": "object",
+        "description": "Optional quiet hours configuration",
+        "properties": {
+          "enabled": { "type": "boolean" },
+          "start": { "type": "string", "description": "Start time in HH:MM format" },
+          "end": { "type": "string", "description": "End time in HH:MM format" },
+          "timezone": { "type": "string", "description": "IANA timezone identifier" }
+        }
+      }
+    }
+  },
+  "sample_payload": {
+    "user_id": "usr_4821",
+    "device_token": "fcm_abc123xyz",
+    "platform": "android",
+    "app_id": "com.kusho.app",
+    "categories": ["transactional", "security"],
+    "quiet_hours": {
+      "enabled": true,
+      "start": "22:00",
+      "end": "08:00",
+      "timezone": "America/New_York"
+    }
+  }
+}

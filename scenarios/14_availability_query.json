@@ -1,0 +1,29 @@
+{
+  "id": "14_availability_query",
+  "version": "1.0",
+  "domain": "scheduling",
+  "method": "POST",
+  "path": "/api/v1/availability/query",
+  "description": "Query available time slots for a provider and service within a date range.",
+  "bug_count": { "simple": 1, "moderate": 2, "complex": 1, "total": 4 },
+  "schema": {
+    "type": "object",
+    "required": ["provider_id", "service_id", "date_from", "date_to", "timezone", "slot_duration_minutes"],
+    "properties": {
+      "provider_id": { "type": "string", "description": "ID of the service provider to query" },
+      "service_id": { "type": "string", "description": "ID of the service to query availability for" },
+      "date_from": { "type": "string", "description": "ISO 8601 start date (YYYY-MM-DD) of the query range" },
+      "date_to": { "type": "string", "description": "ISO 8601 end date (YYYY-MM-DD) of the query range" },
+      "timezone": { "type": "string", "description": "IANA timezone identifier" },
+      "slot_duration_minutes": { "type": "integer", "description": "Requested slot duration in minutes; must be positive and compatible with service duration" }
+    }
+  },
+  "sample_payload": {
+    "provider_id": "prov_551",
+    "service_id": "svc_haircut_01",
+    "date_from": "2026-04-14",
+    "date_to": "2026-04-21",
+    "timezone": "America/New_York",
+    "slot_duration_minutes": 30
+  }
+}

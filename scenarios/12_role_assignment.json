@@ -1,0 +1,26 @@
+{
+  "id": "12_role_assignment",
+  "version": "1.0",
+  "domain": "user-management",
+  "method": "POST",
+  "path": "/api/v1/users/{user_id}/roles",
+  "description": "Assign a role to a user, with optional expiry and scoped permissions.",
+  "bug_count": { "simple": 1, "moderate": 1, "complex": 2, "total": 4 },
+  "schema": {
+    "type": "object",
+    "required": ["user_id", "role", "assigned_by"],
+    "properties": {
+      "user_id": { "type": "string", "description": "Path parameter: ID of the user receiving the role" },
+      "role": { "type": "string", "description": "Role to assign: admin, moderator, vendor, or support" },
+      "assigned_by": { "type": "string", "description": "User ID of the admin performing the assignment" },
+      "expires_at": { "type": "string", "description": "Optional ISO8601 datetime when the role expires" },
+      "permissions": { "type": "array", "description": "Optional list of specific permission overrides", "items": { "type": "string" } }
+    }
+  },
+  "sample_payload": {
+    "user_id": "usr_9901",
+    "role": "moderator",
+    "assigned_by": "usr_admin_01",
+    "permissions": ["read:reports", "flag:content"]
+  }
+}

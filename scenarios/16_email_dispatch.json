@@ -1,0 +1,40 @@
+{
+  "id": "16_email_dispatch",
+  "version": "1.0",
+  "domain": "notifications",
+  "method": "POST",
+  "path": "/api/v1/notifications/email",
+  "description": "Send a transactional or marketing email to one or more recipients.",
+  "bug_count": { "simple": 2, "moderate": 2, "complex": 1, "total": 5 },
+  "schema": {
+    "type": "object",
+    "required": ["to", "from_name", "subject", "priority"],
+    "properties": {
+      "to": {
+        "type": "array",
+        "description": "List of recipients; minimum 1 entry. Each entry has email (required) and name (optional).",
+        "items": {
+          "type": "object",
+          "properties": {
+            "email": { "type": "string" },
+            "name": { "type": "string" }
+          }
+        }
+      },
+      "from_name": { "type": "string", "description": "Display name for the sender" },
+      "reply_to": { "type": "string", "description": "Optional reply-to email address; must be a valid email" },
+      "subject": { "type": "string", "description": "Email subject line" },
+      "template_id": { "type": "string", "description": "Optional template ID; if provided, body is ignored" },
+      "body": { "type": "string", "description": "Email body content; required when template_id is not provided" },
+      "cc": { "type": "array", "description": "Optional list of CC email addresses", "items": { "type": "string" } },
+      "priority": { "type": "string", "description": "Send priority: low, normal, or high" }
+    }
+  },
+  "sample_payload": {
+    "to": [{ "email": "carol@example.com", "name": "Carol" }],
+    "from_name": "KushoAI",
+    "subject": "Your weekly summary",
+    "body": "Here is your activity for this week.",
+    "priority": "normal"
+  }
+}
