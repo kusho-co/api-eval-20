@@ -369,21 +369,6 @@ python eval/evaluate.py \
 ```
 `results.json` will contain per-scenario scores and an overall benchmark score averaged across all 20 scenarios.
 
-### Scoring Reference
-| Component | Weight | Formula |
-|---|---|---|
-| Bug Detection Rate | 70% | `bugs_found / total_bugs` |
-| Coverage Score | 20% | `(param_coverage + edge_coverage + variation_score) / 3` |
-| Efficiency Score | 10% | `min(1, bugs_found / num_tests)` |
-| **Final Score** | | `0.7 × bug_detection + 0.2 × coverage + 0.1 × efficiency` |
-The overall benchmark score is the average Final Score across all 20 scenarios.
-| Score | Interpretation |
-|---|---|
-| 0.0 – 0.3 | Weak |
-| 0.3 – 0.5 | Developing |
-| 0.5 – 0.7 | Proficient |
-| 0.7 – 1.0 | Strong |
-
 ### All Scenario IDs
 | ID | Scenario | Domain |
 |---|---|---|
