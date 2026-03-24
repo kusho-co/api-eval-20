@@ -278,13 +278,155 @@ APIEval-20 evaluates a capability that is largely unmeasured today. It goes beyo
 
 ---
 
-## 7. Explore on Hugging Face
+## 7. Running the APIEval-20 Evaluator
 
-The complete APIEval-20 dataset — all 20 scenarios, request schemas, sample payloads, domain metadata, and the evaluation harness — is hosted on Hugging Face. All scenarios are versioned; subsequent releases carry a version suffix (e.g. `APIEval-20-v2`) to enable longitudinal comparison.
+### Prerequisites
 
-Head over to the dataset page to browse the scenarios, run evaluations through the hosted harness, and see how various AI agents stack up across all 20 scenarios.
+- Python 3.8 or later
 
-**[Explore APIEval-20 on Hugging Face →](https://huggingface.co/datasets/kusho-ai/api-eval-20)**
+### Setup
+
+```bash
+# Clone the dataset repo
+git clone https://huggingface.co/datasets/kusho-ai/api-eval-20
+cd api-eval-20
+
+# Install the single dependency
+pip install -r eval/requirements.txt
+```
+
+### Configuration
+
+Set the following environment variables before running:
+
+```bash
+export APIEVAL_BASE_URL="https://<tbd>"
+export APIEVAL_GRADE_URL="https://<tbd>"
+```
+
+`APIEVAL_GRADE_URL` is optional. If omitted, bug detection scoring is skipped and the evaluator returns coverage and efficiency scores only.
+
+### Test Suite Format
+
+Your agent must produce a JSON file containing a list of test cases. Each test case has a `test_name` and a `payload`:
+
+```json
+[
+  {
+    "test_name": "Order with missing user_id",
+    "payload": {
+      "items": [{ "product_id": "prod_991", "quantity": 2, "unit_price": 29.99 }],
+      "currency": "USD",
+      "shipping": { "address": "123 Main St", "method": "standard", "country": "US" }
+    }
+  },
+  {
+    "test_name": "Order with zero quantity",
+    "payload": {
+      "user_id": "usr_4821",
+      "items": [{ "product_id": "prod_991", "quantity": 0, "unit_price": 29.99 }],
+      "currency": "USD",
+      "shipping": { "address": "123 Main St", "method": "standard", "country": "US" }
+    }
+  }
+]
+```
+
+One file per scenario. The scenario schemas and sample payloads are in the `scenarios/` folder.
+
+### Evaluating a Single Scenario
+
+```bash
+python eval/evaluate.py \
+  --suite path/to/your_suite.json \
+  --scenario 01_order_placement
+```
+
+Output:
+
+```json
+{
+  "scenario": "01_order_placement",
+  "num_tests": 12,
+  "bug_detection_rate": 0.67,
+  "coverage_score": 0.71,
+  "efficiency_score": 0.50,
+  "final_score": 0.66,
+  "details": {
+    "param_coverage": 0.80,
+    "edge_coverage": 0.60,
+    "variation_score": 0.73,
+    "bugs_found": 4,
+    "total_bugs": 6
+  }
+}
+```
+
+### Evaluating All 20 Scenarios
+
+Place all your suite files in a single directory, named `<scenario_id>_suite.json`:
+
+```
+suites/
+  01_order_placement_suite.json
+  02_coupon_redemption_suite.json
+  ...
+  20_paginated_listing_suite.json
+```
+
+Then run:
+
+```bash
+python eval/evaluate.py \
+  --all \
+  --suite-dir ./suites/ \
+  --output results.json
+```
+
+`results.json` will contain per-scenario scores and an overall benchmark score averaged across all 20 scenarios.
+
+### Scoring Reference
+
+| Component | Weight | Formula |
+|---|---|---|
+| Bug Detection Rate | 70% | `bugs_found / total_bugs` |
+| Coverage Score | 20% | `(param_coverage + edge_coverage + variation_score) / 3` |
+| Efficiency Score | 10% | `min(1, bugs_found / num_tests)` |
+| **Final Score** | | `0.7 × bug_detection + 0.2 × coverage + 0.1 × efficiency` |
+
+The overall benchmark score is the average Final Score across all 20 scenarios.
+
+| Score | Interpretation |
+|---|---|
+| 0.0 – 0.3 | Weak |
+| 0.3 – 0.5 | Developing |
+| 0.5 – 0.7 | Proficient |
+| 0.7 – 1.0 | Strong |
+
+### All Scenario IDs
+
+| ID | Scenario | Domain |
+|---|---|---|
+| `01_order_placement` | Place a new order | E-commerce |
+| `02_coupon_redemption` | Redeem a coupon code | E-commerce |
+| `03_inventory_adjustment` | Adjust stock quantity | E-commerce |
+| `04_transaction_creation` | Create a financial transaction | Payments |
+| `05_refund_processing` | Process a refund | Payments |
+| `06_currency_conversion` | Convert currency | Payments |
+| `07_user_login` | Authenticate a user | Authentication |
+| `08_token_refresh` | Refresh an access token | Authentication |
+| `09_password_reset_request` | Request a password reset | Authentication |
+| `10_account_creation` | Create a user account | User Management |
+| `11_profile_update` | Update a user profile | User Management |
+| `12_role_assignment` | Assign a role to a user | User Management |
+| `13_appointment_booking` | Book an appointment | Scheduling |
+| `14_availability_query` | Query available slots | Scheduling |
+| `15_recurring_event_creation` | Create a recurring event | Scheduling |
+| `16_email_dispatch` | Send a transactional email | Notifications |
+| `17_push_notification_config` | Configure push notifications | Notifications |
+| `18_notification_preferences` | Set notification preferences | Notifications |
+| `19_search_query` | Execute a product search | Search & Filtering |
+| `20_paginated_listing` | List products with filters | Search & Filtering |
 
 ---
 
