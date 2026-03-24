@@ -281,11 +281,9 @@ APIEval-20 evaluates a capability that is largely unmeasured today. It goes beyo
 ## 7. Running the APIEval-20 Evaluator
 
 ### Prerequisites
-
 - Python 3.8 or later
 
 ### Setup
-
 ```bash
 # Clone the dataset repo
 git clone https://huggingface.co/datasets/kusho-ai/api-eval-20
@@ -296,20 +294,15 @@ pip install -r eval/requirements.txt
 ```
 
 ### Configuration
-
 Set the following environment variables before running:
-
 ```bash
 export APIEVAL_BASE_URL="https://<tbd>"
 export APIEVAL_GRADE_URL="https://<tbd>"
 ```
-
 `APIEVAL_GRADE_URL` is optional. If omitted, bug detection scoring is skipped and the evaluator returns coverage and efficiency scores only.
 
 ### Test Suite Format
-
 Your agent must produce a JSON file containing a list of test cases. Each test case has a `test_name` and a `payload`:
-
 ```json
 [
   {
@@ -331,19 +324,15 @@ Your agent must produce a JSON file containing a list of test cases. Each test c
   }
 ]
 ```
-
 One file per scenario. The scenario schemas and sample payloads are in the `scenarios/` folder.
 
 ### Evaluating a Single Scenario
-
 ```bash
 python eval/evaluate.py \
   --suite path/to/your_suite.json \
   --scenario 01_order_placement
 ```
-
 Output:
-
 ```json
 {
   "scenario": "01_order_placement",
@@ -363,9 +352,7 @@ Output:
 ```
 
 ### Evaluating All 20 Scenarios
-
 Place all your suite files in a single directory, named `<scenario_id>_suite.json`:
-
 ```
 suites/
   01_order_placement_suite.json
@@ -373,29 +360,23 @@ suites/
   ...
   20_paginated_listing_suite.json
 ```
-
 Then run:
-
 ```bash
 python eval/evaluate.py \
   --all \
   --suite-dir ./suites/ \
   --output results.json
 ```
-
 `results.json` will contain per-scenario scores and an overall benchmark score averaged across all 20 scenarios.
 
 ### Scoring Reference
-
 | Component | Weight | Formula |
 |---|---|---|
 | Bug Detection Rate | 70% | `bugs_found / total_bugs` |
 | Coverage Score | 20% | `(param_coverage + edge_coverage + variation_score) / 3` |
 | Efficiency Score | 10% | `min(1, bugs_found / num_tests)` |
 | **Final Score** | | `0.7 × bug_detection + 0.2 × coverage + 0.1 × efficiency` |
-
 The overall benchmark score is the average Final Score across all 20 scenarios.
-
 | Score | Interpretation |
 |---|---|
 | 0.0 – 0.3 | Weak |
@@ -404,7 +385,6 @@ The overall benchmark score is the average Final Score across all 20 scenarios.
 | 0.7 – 1.0 | Strong |
 
 ### All Scenario IDs
-
 | ID | Scenario | Domain |
 |---|---|---|
 | `01_order_placement` | Place a new order | E-commerce |
