@@ -90,6 +90,13 @@ PATH_PARAM_SCENARIOS = {
 # Timeout in seconds for every outbound HTTP request
 REQUEST_TIMEOUT = 10
 
+def _ssl_verify(url: str) -> bool:
+    """Disable SSL verification for localhost/127.0.0.1, or when APIEVAL_SSL_VERIFY=false."""
+    if os.environ.get("APIEVAL_SSL_VERIFY", "").lower() == "false":
+        return False
+    host = url.split("/")[2].split(":")[0] if "//" in url else ""
+    return host not in ("localhost", "127.0.0.1", "0.0.0.0")
+
 
 # ---------------------------------------------------------------------------
 # Environment / config helpers
@@ -192,6 +199,7 @@ def run_tests(
                 url=url,
                 json=body,
                 timeout=REQUEST_TIMEOUT,
+                verify=_ssl_verify(url),
             )
             status_code = resp.status_code
             try:
@@ -244,7 +252,7 @@ def grade_results(
     payload = {"results": results}
 
     try:
-        resp = requests.post(url, json=payload, timeout=REQUEST_TIMEOUT)
+        resp = requests.post(url, json=payload, timeout=REQUEST_TIMEOUT, verify=_ssl_verify(url))
         resp.raise_for_status()
         return resp.json()
     except requests.exceptions.ConnectionError as exc:
@@ -650,7 +658,43 @@ def main(argv: Optional[List[str]] = None) -> None:
             log.error("Suite directory does not exist: %s", suite_dir)
             sys.exit(1)
         reports = evaluate_all(suite_dir, scenarios_dir, base_url, grade_url)
-        output = reports
+
+        # Aggregate final score across all evaluated scenarios
+        final_scores = [r["final_score"] for r in reports if r.get("final_score") is not None]
+        bug_detection_rates = [r["bug_detection_rate"] for r in reports if r.get("bug_detection_rate") is not None]
+        coverage_scores = [r["coverage_score"] for r in reports if r.get("coverage_score") is not None]
+        efficiency_scores = [r["efficiency_score"] for r in reports if r.get("efficiency_score") is not None]
+
+        def _avg(vals: list) -> Optional[float]:
+            return round(sum(vals) / len(vals), 4) if vals else None
+
+        def _tier(score: Optional[float]) -> str:
+            if score is None: return "n/a"
+            if score >= 0.7:  return "Strong"
+            if score >= 0.5:  return "Proficient"
+            if score >= 0.3:  return "Developing"
+            return "Weak"
+
+        overall = _avg(final_scores)
+        summary = {
+            "overall_score": overall,
+            "tier": _tier(overall),
+            "scenarios_evaluated": len(reports),
+            "scenarios_total": len(SCENARIO_REGISTRY),
+            "avg_bug_detection_rate": _avg(bug_detection_rates),
+            "avg_coverage_score": _avg(coverage_scores),
+            "avg_efficiency_score": _avg(efficiency_scores),
+        }
+
+        log.info("─" * 50)
+        log.info("BENCHMARK SCORE : %.4f  (%s)", overall or 0, _tier(overall))
+        log.info("Scenarios       : %d / %d", len(reports), len(SCENARIO_REGISTRY))
+        log.info("Avg bug detection : %s", summary["avg_bug_detection_rate"])
+        log.info("Avg coverage      : %s", summary["avg_coverage_score"])
+        log.info("Avg efficiency    : %s", summary["avg_efficiency_score"])
+        log.info("─" * 50)
+
+        output = {"summary": summary, "scenarios": reports}
     else:
         if not args.scenario:
             log.error("--scenario is required when using --suite.")
