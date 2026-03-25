@@ -40,7 +40,7 @@ import os
 import sys
 from itertools import combinations
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 import requests
 
@@ -58,26 +58,26 @@ log = logging.getLogger(__name__)
 # Scenario registry
 # ---------------------------------------------------------------------------
 SCENARIO_REGISTRY = {
-    "01_order_placement":          {"method": "POST",  "path": "/api/v1/orders"},
-    "02_coupon_redemption":        {"method": "POST",  "path": "/api/v1/coupons/redeem"},
-    "03_inventory_adjustment":     {"method": "POST",  "path": "/api/v1/inventory/adjust"},
-    "04_transaction_creation":     {"method": "POST",  "path": "/api/v1/transactions"},
-    "05_refund_processing":        {"method": "POST",  "path": "/api/v1/refunds"},
-    "06_currency_conversion":      {"method": "POST",  "path": "/api/v1/currency/convert"},
-    "07_user_login":               {"method": "POST",  "path": "/api/v1/auth/login"},
-    "08_token_refresh":            {"method": "POST",  "path": "/api/v1/auth/refresh"},
-    "09_password_reset_request":   {"method": "POST",  "path": "/api/v1/auth/password/reset-request"},
-    "10_account_creation":         {"method": "POST",  "path": "/api/v1/users"},
-    "11_profile_update":           {"method": "PATCH", "path": "/api/v1/users/{user_id}/profile"},
-    "12_role_assignment":          {"method": "POST",  "path": "/api/v1/users/{user_id}/roles"},
-    "13_appointment_booking":      {"method": "POST",  "path": "/api/v1/appointments"},
-    "14_availability_query":       {"method": "POST",  "path": "/api/v1/availability/query"},
-    "15_recurring_event_creation": {"method": "POST",  "path": "/api/v1/events/recurring"},
-    "16_email_dispatch":           {"method": "POST",  "path": "/api/v1/notifications/email"},
-    "17_push_notification_config": {"method": "POST",  "path": "/api/v1/notifications/push/config"},
-    "18_notification_preferences": {"method": "PUT",   "path": "/api/v1/users/{user_id}/notification-preferences"},
-    "19_search_query":             {"method": "POST",  "path": "/api/v1/search"},
-    "20_paginated_listing":        {"method": "POST",  "path": "/api/v1/products/list"},
+    "01_order_placement":          {"method": "POST",  "path": "/eval/api/v1/orders"},
+    "02_coupon_redemption":        {"method": "POST",  "path": "/eval/api/v1/coupons/redeem"},
+    "03_inventory_adjustment":     {"method": "POST",  "path": "/eval/api/v1/inventory/adjust"},
+    "04_transaction_creation":     {"method": "POST",  "path": "/eval/api/v1/transactions"},
+    "05_refund_processing":        {"method": "POST",  "path": "/eval/api/v1/refunds"},
+    "06_currency_conversion":      {"method": "POST",  "path": "/eval/api/v1/currency/convert"},
+    "07_user_login":               {"method": "POST",  "path": "/eval/api/v1/auth/login"},
+    "08_token_refresh":            {"method": "POST",  "path": "/eval/api/v1/auth/refresh"},
+    "09_password_reset_request":   {"method": "POST",  "path": "/eval/api/v1/auth/password/reset-request"},
+    "10_account_creation":         {"method": "POST",  "path": "/eval/api/v1/users"},
+    "11_profile_update":           {"method": "PATCH", "path": "/eval/api/v1/users/{user_id}/profile"},
+    "12_role_assignment":          {"method": "POST",  "path": "/eval/api/v1/users/{user_id}/roles"},
+    "13_appointment_booking":      {"method": "POST",  "path": "/eval/api/v1/appointments"},
+    "14_availability_query":       {"method": "POST",  "path": "/eval/api/v1/availability/query"},
+    "15_recurring_event_creation": {"method": "POST",  "path": "/eval/api/v1/events/recurring"},
+    "16_email_dispatch":           {"method": "POST",  "path": "/eval/api/v1/notifications/email"},
+    "17_push_notification_config": {"method": "POST",  "path": "/eval/api/v1/notifications/push/config"},
+    "18_notification_preferences": {"method": "PUT",   "path": "/eval/api/v1/users/{user_id}/notification-preferences"},
+    "19_search_query":             {"method": "POST",  "path": "/eval/api/v1/search"},
+    "20_paginated_listing":        {"method": "POST",  "path": "/eval/api/v1/products/list"},
 }
 
 # Fields that are path parameters (extracted from payload and substituted into URL)
@@ -104,7 +104,7 @@ def get_base_url() -> str:
     return url
 
 
-def get_grade_url() -> str | None:
+def get_grade_url() -> Optional[str]:
     """Return APIEVAL_GRADE_URL, or None with a warning if absent."""
     url = os.environ.get("APIEVAL_GRADE_URL", "").rstrip("/")
     if not url:
@@ -129,7 +129,7 @@ def load_scenario(scenario_id: str, scenarios_dir: Path) -> dict:
         return json.load(fh)
 
 
-def collect_schema_fields(scenario: dict) -> list[str]:
+def collect_schema_fields(scenario: dict) -> List[str]:
     """Return a flat list of top-level property names defined in the schema."""
     return list(scenario.get("schema", {}).get("properties", {}).keys())
 
@@ -240,7 +240,7 @@ def grade_results(
 
     Returns {"bugs_found": 0, "total_bugs": 0, "triggered": []} on failure.
     """
-    url = f"{grade_url}/grade/{scenario_id}"
+    url = f"{grade_url}/eval/grade/{scenario_id}"
     payload = {"results": results}
 
     try:
@@ -263,13 +263,13 @@ def grade_results(
 # Coverage scoring helpers
 # ---------------------------------------------------------------------------
 
-def _flatten(obj: Any, prefix: str = "") -> dict[str, Any]:
+def _flatten(obj: Any, prefix: str = "") -> Dict[str, Any]:
     """
     Recursively flatten a nested dict/list into dotted-key -> value pairs.
 
     Lists are indexed numerically (e.g. items.0.product_id).
     """
-    items: dict[str, Any] = {}
+    items: Dict[str, Any] = {}
     if isinstance(obj, dict):
         for k, v in obj.items():
             full_key = f"{prefix}.{k}" if prefix else k
@@ -321,7 +321,7 @@ def _is_edge_value(value: Any, sample_value: Any) -> bool:
 
 def compute_param_coverage(
     suite: list[dict],
-    schema_fields: list[str],
+    schema_fields: List[str],
     sample_payload: dict,
 ) -> float:
     """
@@ -356,7 +356,7 @@ def compute_param_coverage(
 
 def compute_edge_coverage(
     suite: list[dict],
-    schema_fields: list[str],
+    schema_fields: List[str],
     sample_payload: dict,
 ) -> float:
     """
@@ -416,9 +416,9 @@ def compute_variation_score(suite: list[dict]) -> float:
 
 def compute_scores(
     suite: list[dict],
-    schema_fields: list[str],
+    schema_fields: List[str],
     sample_payload: dict,
-    bugs_found: int | None,
+    bugs_found: Optional[int],
     total_bugs: int,
 ) -> dict:
     """
@@ -469,7 +469,7 @@ def evaluate_scenario(
     scenario_id: str,
     scenarios_dir: Path,
     base_url: str,
-    grade_url: str | None,
+    grade_url: Optional[str],
 ) -> dict:
     """
     Full evaluation pipeline for a single scenario:
@@ -494,7 +494,7 @@ def evaluate_scenario(
     log.info("Running %d test(s) against reference API...", len(suite))
     results = run_tests(suite, scenario_id, base_url)
 
-    bugs_found: int | None = None
+    bugs_found: Optional[int] = None
     total_bugs: int = 0
 
     if grade_url:
@@ -527,7 +527,7 @@ def evaluate_all(
     suite_dir: Path,
     scenarios_dir: Path,
     base_url: str,
-    grade_url: str | None,
+    grade_url: Optional[str],
 ) -> list[dict]:
     """
     Evaluate every *.json suite file found in *suite_dir*.
@@ -569,7 +569,7 @@ def evaluate_all(
 # CLI
 # ---------------------------------------------------------------------------
 
-def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Evaluate an AI agent's API test suite against reference scenarios.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -603,7 +603,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--scenarios-dir",
         metavar="DIR",
         default="../scenarios",
-        help="Directory containing scenario JSON definition files. Default: ../scenarios",
+        help="Directory containing scenario JSON definition files. Auto-detected if not provided.",
     )
     parser.add_argument(
         "--output",
@@ -614,13 +614,32 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def main(argv: list[str] | None = None) -> None:
+def main(argv: Optional[List[str]] = None) -> None:
     args = parse_args(argv)
 
-    scenarios_dir = Path(args.scenarios_dir).expanduser().resolve()
-    if not scenarios_dir.is_dir():
-        log.error("Scenarios directory does not exist: %s", scenarios_dir)
+    # Resolve scenarios directory — check the explicit arg first, then fall back
+    # to common locations relative to the script and the current working directory.
+    _script_dir = Path(__file__).parent
+    _candidates = [
+        Path(args.scenarios_dir).expanduser(),   # explicit --scenarios-dir or default
+        _script_dir / "../scenarios",            # repo root when running from eval/
+        _script_dir / "scenarios",               # scenarios next to the script
+        Path("scenarios"),                       # current working directory
+        Path("../scenarios"),                    # one level up from cwd
+    ]
+    scenarios_dir = None
+    for _c in _candidates:
+        _resolved = _c.resolve()
+        if _resolved.is_dir():
+            scenarios_dir = _resolved
+            break
+    if scenarios_dir is None:
+        log.error(
+            "Could not find scenarios directory. Tried: %s",
+            ", ".join(str(c.resolve()) for c in _candidates),
+        )
         sys.exit(1)
+    log.info("Using scenarios directory: %s", scenarios_dir)
 
     base_url = get_base_url()
     grade_url = get_grade_url()
