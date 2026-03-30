@@ -296,8 +296,8 @@ pip install -r eval/requirements.txt
 ### Configuration
 Set the following environment variables before running:
 ```bash
-export APIEVAL_BASE_URL="https://<tbd>"
-export APIEVAL_GRADE_URL="https://<tbd>"
+export APIEVAL_BASE_URL="https://eval.kusho.ai"
+export APIEVAL_GRADE_URL="https://eval.kusho.ai"
 ```
 `APIEVAL_GRADE_URL` is optional. If omitted, bug detection scoring is skipped and the evaluator returns coverage and efficiency scores only.
 
