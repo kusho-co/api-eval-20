@@ -437,7 +437,7 @@ def compute_scores(
     param_coverage = compute_param_coverage(suite, schema_fields, sample_payload)
     edge_coverage = compute_edge_coverage(suite, schema_fields, sample_payload)
     variation_score = compute_variation_score(suite)
-    coverage_score = (param_coverage + edge_coverage + variation_score) / 3.0
+    coverage_score = param_coverage
 
     if bugs_found is not None and num_tests > 0:
         bug_detection_rate = bugs_found / total_bugs if total_bugs > 0 else 0.0

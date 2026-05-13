@@ -201,13 +201,13 @@ Bug Detection Rate = bugs_found / total_bugs
 
 ### Coverage Score — 20%
 
-Measures how well the test suite explores the API surface across three independently computed dimensions. Each dimension produces a value between 0 and 1; the three are averaged to produce the final Coverage Score.
+Measures how much of the request schema the test suite exercises. Coverage is based only on parameter coverage: a schema field counts as covered when at least one test focuses on that field by modifying it, omitting it, or setting it to an alternate value compared with the valid sample payload.
 
 ```
-Coverage Score = (param_coverage + edge_coverage + variation_score) / 3
+Coverage Score = param_coverage
 ```
 
-**Range: 0 – 1.** All three sub-dimensions are individually bounded [0, 1], so the average is too. A score of 1 requires full field coverage, edge tests on every field, and completely non-overlapping payloads — a high bar that rewards comprehensive, systematic suites.
+**Range: 0 – 1.** A score of 1 means every top-level schema field is exercised by at least one test case. This keeps the coverage component focused on API surface exploration and avoids penalising suites for producing many similar edge-case payloads.
 
 #### Parameter Coverage
 
@@ -217,23 +217,6 @@ What fraction of schema fields are the *focus* of at least one test — i.e., di
 param_coverage = fields_exercised / total_schema_fields
 ```
 
-#### Edge Case Coverage
-
-What fraction of schema fields have at least one test that targets them with a recognised edge value. Edge values are: field omitted entirely, `null`, `""`, `[]`, wrong type, zero or negative number, and out-of-range value.
-
-```
-edge_coverage = fields_with_edge_test / total_schema_fields
-```
-
-#### Input Variation
-
-Penalises suites that repeat near-identical payloads. Computed as one minus the average pairwise Jaccard similarity across all test payload pairs, where each payload is treated as a set of `(field, value)` pairs.
-
-```
-variation_score = 1 − mean(Jaccard(tᵢ, tⱼ))  ∀ i ≠ j
-```
-
-A score of 1 means every test is completely distinct; a score approaching 0 means the suite is largely repetitive.
 
 ### Efficiency Score — 10%
 
@@ -338,9 +321,9 @@ Output:
   "scenario": "01_order_placement",
   "num_tests": 12,
   "bug_detection_rate": 0.67,
-  "coverage_score": 0.71,
+  "coverage_score": 0.80,
   "efficiency_score": 0.50,
-  "final_score": 0.66,
+  "final_score": 0.68,
   "details": {
     "param_coverage": 0.80,
     "edge_coverage": 0.60,
