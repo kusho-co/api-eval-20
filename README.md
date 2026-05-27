@@ -112,7 +112,21 @@ Require understanding the *relationship* between multiple fields, or the broader
 
 ---
 
-## 3. Agent I/O
+## 3. Benchmark Leaderboard
+
+| Rank | System | Category | Best workflow | Bug detect | Coverage | Efficiency | Final | Std dev |
+| :---: | :--- | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| 1 | **KushoAI** | API testing agent | Native KushoAI | **0.89** | **1.00** | **0.14** | **0.83** | +/-0.03 |
+| 2 | Claude Code | Coding agent | Prompt chain | 0.76 | 0.98 | 0.18 | 0.76 | +/-0.05 |
+| 3 | Cursor | Coding agent | Prompt chain | 0.70 | 0.95 | 0.16 | 0.70 | +/-0.07 |
+| 4 | GitHub Copilot | Coding agent | Structured prompt | 0.64 | 0.92 | 0.14 | 0.64 | +/-0.08 |
+| 5 | Claude Sonnet 4.6 | General LLM | Structured prompt | 0.60 | 0.90 | 0.20 | 0.62 | +/-0.09 |
+| 6 | GPT-5 | General LLM | Structured prompt | 0.56 | 0.88 | 0.18 | 0.58 | +/-0.08 |
+| 7 | Gemini 2.5 Pro | General LLM | Structured prompt | 0.49 | 0.82 | 0.17 | 0.51 | +/-0.10 |
+
+You can find the detailed report here - https://resources.kusho.ai/ai-agent-benchmark-api-bug-detection
+
+## 4. Agent I/O
 
 ### What the Agent Receives
 
@@ -171,7 +185,7 @@ The agent must output a **test suite** — a list of test cases, where each test
 
 ---
 
-## 4. Evaluation Methodology
+## 5. Evaluation Methodology
 
 All 20 reference API implementations are deployed and running. Evaluation is fully automated: each test case in the agent's output is executed against the live API, and the responses are analysed to determine which planted bugs were triggered.
 
@@ -179,7 +193,7 @@ A bug is considered **detected** if at least one test case in the suite produces
 
 ---
 
-## 5. Scoring
+## 6. Scoring
 
 The final score combines three factors, weighted to emphasise real-world value: finding bugs matters most, systematic coverage rewards thoroughness, and efficiency discourages noise.
 
@@ -248,7 +262,7 @@ The final benchmark score for an agent is the **average Final Score across all 2
 
 ---
 
-## 6. Why This Benchmark Matters
+## 7. Why This Benchmark Matters
 
 APIEval-20 evaluates a capability that is largely unmeasured today. It goes beyond simple code generation or factual reasoning — it measures something more practically valuable.
 
@@ -261,7 +275,7 @@ APIEval-20 evaluates a capability that is largely unmeasured today. It goes beyo
 
 ---
 
-## 7. Running the APIEval-20 Evaluator
+## 8. Running the APIEval-20 Evaluator
 
 ### Prerequisites
 - Python 3.8 or later
@@ -378,7 +392,7 @@ python eval/evaluate.py \
 
 ---
 
-## 8. What Comes Next
+## 9. What Comes Next
 
 APIEval-20 is a **functional testing benchmark**. Every scenario, every planted bug, and every scoring dimension is scoped to functional correctness — how well an agent validates that an API behaves as intended given valid and invalid inputs. Security vulnerabilities, authentication bypasses, injection attacks, and authorization failures are explicitly out of scope here.
 
