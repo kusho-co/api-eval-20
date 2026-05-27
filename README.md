@@ -114,7 +114,7 @@ Require understanding the *relationship* between multiple fields, or the broader
 
 ## 3. Benchmark Leaderboard
 
-| Rank | System | Category | Best workflow | Bug detect | Coverage | Efficiency | Final | Std dev |
+| Rank | System | Category | Best workflow | Bug detection rate | Coverage | Efficiency | Final score | Std dev across runs |
 | :---: | :--- | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
 | 1 | **KushoAI** | API testing agent | Native KushoAI | **0.89** | **1.00** | **0.14** | **0.83** | +/-0.03 |
 | 2 | Claude Code | Coding agent | Prompt chain | 0.76 | 0.98 | 0.18 | 0.76 | +/-0.05 |
